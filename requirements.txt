@@ -1,0 +1,6 @@
+wordcloud
+pandas
+pillow
+fastapi
+uvicorn
+python-multipart
