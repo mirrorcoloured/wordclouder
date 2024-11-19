@@ -26,20 +26,9 @@ async def save_uploaded_file(upload_file: UploadFile, file_path: str):
 
 
 # Function to load the text file and convert it into a pandas DataFrame
-def load_text_file(file_path: str):
+def load_text_file(file_path: str) -> str:
     with open(file_path, "r", encoding="utf-8") as f:
-        raw_data = f.read()
-    lines = raw_data.split("\n")
-    data = []
-    for i in range(0, len(lines), 3):
-        data.append(
-            {
-                "ts": lines[i],
-                "speaker": lines[i + 1],
-                "text": lines[i + 2],
-            }
-        )
-    return pd.DataFrame(data)
+        return f.read()
 
 
 # Function to load stopwords from the file
@@ -86,33 +75,64 @@ async def process_files(
     text_file: UploadFile,
     image_file: UploadFile,
     mask_color: str = Form(...),
-):
-    # Define file paths for temporary storage
+) -> FileResponse:
+    """
+    Processes uploaded text and image files to generate a word cloud.
+
+    This endpoint accepts a text file, an image file, and a mask color as input.
+    It uses the text file's content to generate a word cloud, which is shaped
+    according to the provided image and masked using the selected color. The
+    generated word cloud is returned as a PNG image.
+
+    ### Parameters:
+    - `text_file` (UploadFile):
+        A `.txt` file containing text to analyze. Stopwords will be
+        automatically removed.
+    - `image_file` (UploadFile):
+        A `.png` file used as the mask for shaping the word cloud.
+    - `mask_color` (str):
+        A hexadecimal color value (e.g., `#ffffff`) representing the color to be
+        masked in the image. All parts of the image matching this color will
+        define the area of the word cloud.
+
+    ### Returns:
+    - `FileResponse`: A PNG image of the generated word cloud.
+
+    ### Notes:
+    - The uploaded files are saved temporarily for processing and then deleted.
+
+    ### Example Request (via FormData):
+    ```
+    POST /process/
+    Content-Type: multipart/form-data
+    {
+        "text_file": <uploaded .txt file>,
+        "image_file": <uploaded .png file>,
+        "mask_color": "#ffffff"
+    }
+    ```
+
+    ### Example Response:
+    - A PNG file containing the generated word cloud.
+
+    """
     text_path = "temp_text.txt"
     image_path = "temp_image.png"
-
-    # Save the uploaded files
     await save_uploaded_file(text_file, text_path)
     await save_uploaded_file(image_file, image_path)
 
-    # Load and process text file
-    df = load_text_file(text_path)
-    all_words = " ".join(df["text"].to_list()).lower()
-
-    # Get stopwords
-    stopwords = get_stopwords()
-
-    # Prepare the mask image
     mask_image, color_image = prepare_mask_image(image_path, mask_color)
 
-    # Generate the word cloud
-    wc = generate_wordcloud(all_words, mask_image, stopwords, color_image)
+    wc = generate_wordcloud(
+        all_words=load_text_file(text_path),
+        mask_image=mask_image,
+        stopwords=get_stopwords(),
+        color_image=color_image,
+    )
 
-    # Save the generated word cloud to a file
     output_path = "output_wordcloud.png"
     wc.to_file(output_path)
 
-    # Clean up temporary files
     clean_up_files(text_path, image_path)
 
     return FileResponse(output_path, media_type="image/png")

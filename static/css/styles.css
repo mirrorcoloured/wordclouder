@@ -20,7 +20,7 @@ form {
     flex-direction: column;
     gap: 15px;
     width: 80%;
-    max-width: 500px;
+    max-width: 1000px; /* Allows the form to be wide */
     align-items: center;
 }
 
@@ -38,20 +38,6 @@ button:hover {
     background-color: #0056b3;
 }
 
-.dropzone {
-    border: 2px dashed #007BFF;
-    padding: 20px;
-    width: 100%;
-    text-align: center;
-    cursor: pointer;
-    border-radius: 5px;
-    background-color: #f0f8ff;
-}
-
-.dropzone.dragging {
-    background-color: #e6f7ff;
-}
-
 #previewSection {
     display: flex;
     flex-direction: column;
@@ -59,8 +45,68 @@ button:hover {
     gap: 10px;
 }
 
-img {
-    max-width: 100%;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+/* Adjusted drag-and-drop zone */
+.dropzone {
+    border: 2px dashed #ccc;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    width: 100%; /* Set width to 100% */
+    max-width: 1000px; /* Maximum width limit */
+    margin: 10px;
+    display: inline-block; /* Allows side-by-side layout */
+    overflow: hidden; /* Ensures content stays inside bounds */
+    box-sizing: border-box; /* Ensures padding is considered in total size */
+    min-height: 200px; /* Ensures a minimum height for better visibility */
+}
+
+.dropzone.dragging {
+    background-color: #e6f7ff;
+}
+
+.dropzone p {
+    margin: 0;
+}
+
+/* Word count display inside text drop zone */
+#wordCountDisplay {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    font-size: 14px;
+    color: #333;
+}
+
+/* Image preview container inside image drop zone */
+#imagePreviewContainer {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    width: calc(100% - 20px); /* Full width minus padding */
+    max-height: 120px; /* Define max height */
+    overflow: hidden;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+#imagePreview {
+    width: 100%; /* Ensure image fits within the width of the container */
+    height: auto; /* Maintain aspect ratio */
+    max-height: 100%; /* Limit the height of the image to fit within the container */
+    object-fit: contain; /* Ensure the image is contained within the box, preserving aspect ratio */
+    display: block;
+    margin: 0 auto;
+}
+
+/* Input color picker styling */
+input[type="color"] {
+    margin: 10px 0;
+}
+
+/* Adjust the layout of the form */
+form {
+    display: flex;
+    justify-content: space-between;
+    max-width: 900px;
+    margin: 0 auto;
 }

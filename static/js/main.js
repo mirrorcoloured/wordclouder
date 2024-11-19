@@ -53,7 +53,7 @@ function previewImage(file) {
     const reader = new FileReader();
     reader.onload = (e) => {
         imagePreview.src = e.target.result;
-        imagePreview.hidden = false;
+        imagePreviewContainer.hidden = false;
     };
     reader.readAsDataURL(file);
 }
