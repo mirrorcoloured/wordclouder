@@ -8,23 +8,32 @@
 </head>
 <body>
     <h1>Word Cloud Generator</h1>
+
     <form id="uploadForm">
-        <div id="dropzone" class="dropzone">
-            <p>Drag and drop your files here, or click to upload</p>
+        <div id="textDropzone" class="dropzone">
+            <p>Drag and drop a text file here, or click to upload</p>
             <input type="file" id="textFile" name="textFile" accept=".txt" hidden>
+        </div>
+
+        <div id="imageDropzone" class="dropzone">
+            <p>Drag and drop an image file here, or click to upload</p>
             <input type="file" id="imageFile" name="imageFile" accept=".png" hidden>
         </div>
-    
+
         <div id="previewSection">
-            <label for="backgroundColor">Pick Background Color:</label>
-            <input type="color" id="backgroundColor" name="backgroundColor" value="#ffffff">
+            <p id="wordCountDisplay" hidden>Word Count: <span id="wordCount"></span></p>
+
             <img id="imagePreview" alt="Mask Image Preview" hidden>
+            
+            <label for="maskColor">Pick Mask Color:</label>
+            <input type="color" id="maskColor" name="maskColor" value="#ffffff">
         </div>
-    
+
         <button type="submit">Generate Word Cloud</button>
     </form>
+
     <img id="outputImage" alt="Generated Word Cloud" hidden>
-    
-    <script src="/static/js/script.js"></script>
+
+    <script type="module" src="/static/js/main.js"></script>
 </body>
 </html>

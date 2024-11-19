@@ -24,7 +24,7 @@ async def serve_homepage():
 async def process_files(
     text_file: UploadFile,
     image_file: UploadFile,
-    background_color: str = Form(...),
+    mask_color: str = Form(...),
 ):
     # Save uploaded files temporarily
     text_path = "temp_text.txt"
@@ -36,7 +36,7 @@ async def process_files(
         f.write(await image_file.read())
 
     # Load transcript data
-    with open(text_path, "r") as f:
+    with open(text_path, "r", encoding="utf-8") as f:
         raw_data = f.read()
     lines = raw_data.split("\n")
     data = []
@@ -55,14 +55,20 @@ async def process_files(
         stopwords = f.read().split("\n")
     all_words = " ".join(df["text"].to_list()).lower()
 
+    # Convert hex color to RGB
+    mask_color_rgb = tuple(
+        int(mask_color.lstrip("#")[i : i + 2], 16) for i in (0, 2, 4)
+    )
+
     # Process the image
     color_image = np.array(Image.open(image_path).convert("RGB"))
     mask_image = color_image.copy()
-    white_pixels = mask_image == 255
-    mask_image[~white_pixels] = 0
+
+    # Create the mask based on the selected mask color
+    mask_pixels = np.all(color_image == mask_color_rgb, axis=-1)
+    mask_image[~mask_pixels] = 0
 
     wc = WordCloud(
-        background_color=background_color,
         mask=mask_image,
         contour_width=5,
         contour_color="black",
