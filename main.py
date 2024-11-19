@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from wordcloud import WordCloud, ImageColorGenerator
@@ -21,7 +21,11 @@ async def serve_homepage():
 
 
 @app.post("/process/")
-async def process_files(text_file: UploadFile, image_file: UploadFile):
+async def process_files(
+    text_file: UploadFile,
+    image_file: UploadFile,
+    background_color: str = Form(...),
+):
     # Save uploaded files temporarily
     text_path = "temp_text.txt"
     image_path = "temp_image.png"
@@ -58,6 +62,7 @@ async def process_files(text_file: UploadFile, image_file: UploadFile):
     mask_image[~white_pixels] = 0
 
     wc = WordCloud(
+        background_color=background_color,
         mask=mask_image,
         contour_width=5,
         contour_color="black",
